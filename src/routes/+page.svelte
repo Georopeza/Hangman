@@ -7,7 +7,7 @@
     let letra = '';
     let juegoTerminado = false;
     let mensaje = '';
-    let letrasIngresadas = []; //Todas las variables necesarias para el funcionamiento del juego
+    let letrasIngresadas = []; 
 
     const dibujosAhorcado = [
       '_______\n|     |\n|\n|\n|\n|\n|____',
@@ -16,13 +16,23 @@
       '_______\n|     |\n|     O\n|    /|\n|\n|\n|____',
       '_______\n|     |\n|     O\n|    /|\\\n|\n|\n|____',
       '_______\n|     |\n|     O\n|    /|\\\n|    /\n|\n|____',
-      '_______\n|     |\n|     O\n|    /|\\\n|    / \\\n|\n|____' // El dibujo del ahorcado por partes para que sea usado dependiendo 
-    ];                                                              // de la situacion
+      '_______\n|     |\n|     O\n|    /|\\\n|    / \\\n|\n|____'  
+    ];
   
-    async function iniciarJuego() { //Funcion que inicia el juego, obtiene las palabras de la api y genera los espacios a "rellenar"
+    async function obtenerPalabra() {
       const response = await fetch('https://pow-3bae6d63ret5.deno.dev/word');
       const data = await response.json();
-      palabra = data.word;
+      return data.word;
+    }
+
+    async function iniciarJuego() {
+      let palabraElegida = await obtenerPalabra();
+      let confirmacion = confirm(`¿Quieres usar la palabra '${palabraElegida}' para el juego?`);
+      while (!confirmacion) {
+        palabraElegida = await obtenerPalabra();
+        confirmacion = confirm(`¿Quieres usar la palabra '${palabraElegida}' para el juego?`);
+      }
+      palabra = palabraElegida;
       palabraAdivinada = Array(palabra.length).fill('_');
       intentos = 6;
       juegoTerminado = false;
@@ -32,35 +42,35 @@
   
     onMount(iniciarJuego);
   
-    function adivinarLetra() { //Aqui esta contenida la mayor parte de la logica del programa, todo lo relacionado con adivinar la palabra
+    function adivinarLetra() { 
       if (letra === '') {
-        alert('Has ingresado un espacio vacío. Por favor, introduce una letra.'); // Validando los datos de entrada
+        alert('Has ingresado un espacio vacío. Por favor, introduce una letra.');
         return;
       }
 
       if (letrasIngresadas.includes(letra)) {
-        alert('Ya has ingresado esa letra. Por favor, introduce una letra diferente.'); // Validando los datos de entrada
+        alert('Ya has ingresado esa letra. Por favor, introduce una letra diferente.');
         return;
       }
 
       if (letra.length > 1) {
-        alert('Has ingresado más de un carácter. Por favor, introduce solo una letra.'); // Validando los datos de entrada
+        alert('Has ingresado más de un carácter. Por favor, introduce solo una letra.');
         return;
       }
 
       if (!isNaN(letra)) {
-        alert('Has ingresado un número. Por favor, introduce una letra.'); // Validando los datos de entrada
+        alert('Has ingresado un número. Por favor, introduce una letra.');
         return;
       }
 
       if (!/^[a-zA-Z]$/.test(letra)) {
-        alert('Has ingresado un carácter no válido. Por favor, introduce una letra.'); // Validando los datos de entrada
+        alert('Has ingresado un carácter no válido. Por favor, introduce una letra.');
         return;
       }                                                                                 
 
       letrasIngresadas = [...letrasIngresadas, letra]; 
 
-      let acierto = false; // Verificando si acertó o no 
+      let acierto = false; 
       for (let i = 0; i < palabra.length; i++) {
         if (palabra[i] === letra) {
             palabraAdivinada[i] = letra;
@@ -68,15 +78,15 @@
         }
       }
 
-      if (!acierto && letra !== '') { // No acertó
+      if (!acierto && letra !== '') {
         intentos--;
       }
 
       if (intentos === 0) {
         juegoTerminado = true;
-        mensaje = `Has perdido. La palabra era '${palabra}'.`; // Se quedó sin intentos
+        mensaje = `Has perdido. La palabra era '${palabra}'.`; 
         palabraAdivinada = palabra.split('');
-      } else if (!palabraAdivinada.includes('_')) { //Ganó
+      } else if (!palabraAdivinada.includes('_')) {
         juegoTerminado = true;
         mensaje = '¡Has ganado!';
       }
@@ -84,11 +94,11 @@
       letra = ''; //Se limpia la variable letra para que pueda seguir adivinando
     }
 
-    function manejarTecla(event) { //Para poder introducir las letras con la tecla Enter y no sea tan aparatoso con el ratón
+    function manejarTecla(event) { 
       if (event.key === 'Enter') {
         adivinarLetra();
       }
-    }   // Aqui finaliza la parte logica del juego y empieza la estructura basica en html y el formato en css
+    }  
 </script>
 <div class="Juego">   
 <h1>Hangman</h1>

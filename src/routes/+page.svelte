@@ -1,122 +1,18 @@
 <script>
-    import { onMount } from 'svelte';
-  
-    let palabra = '';
-    let intentos = 6;
-    let palabraAdivinada = [];
-    let letra = '';
-    let juegoTerminado = false;
-    let mensaje = '';
-    let letrasIngresadas = []; 
-
-    const dibujosAhorcado = [
-      '_______\n|     |\n|\n|\n|\n|\n|____',
-      '_______\n|     |\n|     O\n|\n|\n|\n|____',
-      '_______\n|     |\n|     O\n|     |\n|\n|\n|____',
-      '_______\n|     |\n|     O\n|    /|\n|\n|\n|____',
-      '_______\n|     |\n|     O\n|    /|\\\n|\n|\n|____',
-      '_______\n|     |\n|     O\n|    /|\\\n|    /\n|\n|____',
+  const dibujosAhorcado = [
       '_______\n|     |\n|     O\n|    /|\\\n|    / \\\n|\n|____'  
     ];
-  
-    async function obtenerPalabra() {
-      const response = await fetch('https://pow-3bae6d63ret5.deno.dev/word');
-      const data = await response.json();
-      return data.word;
-    }
-
-    async function iniciarJuego() {
-      let palabraElegida = await obtenerPalabra();
-      let confirmacion = confirm(`¿Quieres usar la palabra '${palabraElegida}' para el juego?`);
-      while (!confirmacion) {
-        palabraElegida = await obtenerPalabra();
-        confirmacion = confirm(`¿Quieres usar la palabra '${palabraElegida}' para el juego?`);
-      }
-      palabra = palabraElegida;
-      palabraAdivinada = Array(palabra.length).fill('_');
-      intentos = 6;
-      juegoTerminado = false;
-      mensaje = '';
-      letrasIngresadas = [];
-    }
-  
-    onMount(iniciarJuego);
-  
-    function adivinarLetra() { 
-      if (letra === '') {
-        alert('Has ingresado un espacio vacío. Por favor, introduce una letra.');
-        return;
-      }
-
-      if (letrasIngresadas.includes(letra)) {
-        alert('Ya has ingresado esa letra. Por favor, introduce una letra diferente.');
-        return;
-      }
-
-      if (letra.length > 1) {
-        alert('Has ingresado más de un carácter. Por favor, introduce solo una letra.');
-        return;
-      }
-
-      if (!isNaN(letra)) {
-        alert('Has ingresado un número. Por favor, introduce una letra.');
-        return;
-      }
-
-      if (!/^[a-zA-Z]$/.test(letra)) {
-        alert('Has ingresado un carácter no válido. Por favor, introduce una letra.');
-        return;
-      }                                                                                 
-
-      letrasIngresadas = [...letrasIngresadas, letra]; 
-
-      let acierto = false; 
-      for (let i = 0; i < palabra.length; i++) {
-        if (palabra[i] === letra) {
-            palabraAdivinada[i] = letra;
-            acierto = true; // Acertó
-        }
-      }
-
-      if (!acierto && letra !== '') {
-        intentos--;
-      }
-
-      if (intentos === 0) {
-        juegoTerminado = true;
-        mensaje = `Has perdido. La palabra era '${palabra}'.`; 
-        palabraAdivinada = palabra.split('');
-      } else if (!palabraAdivinada.includes('_')) {
-        juegoTerminado = true;
-        mensaje = '¡Has ganado!';
-      }
-
-      letra = ''; //Se limpia la variable letra para que pueda seguir adivinando
-    }
-
-    function manejarTecla(event) { 
-      if (event.key === 'Enter') {
-        adivinarLetra();
-      }
-    }  
 </script>
-<div class="Juego">   
-<h1>Hangman</h1>
-<pre>{dibujosAhorcado[6 - intentos]}</pre>
-<div class="palabra">{palabraAdivinada.join(' ')}</div>
-<p>Te quedan {intentos} intentos.</p>
-<p>Letras ingresadas: {letrasIngresadas.join(', ')}</p>
-
-{#if juegoTerminado}
-  <p>{mensaje}</p>
-  <button on:click={iniciarJuego}>Jugar de nuevo</button> 
-{:else}
-  <input type="text" bind:value={letra} placeholder="Introduce una letra" on:keyup={manejarTecla}>
-  <button on:click={adivinarLetra}>Adivinar</button>
-{/if}
-</div>
-
-<style>
+  <div class="Juego">   
+    <h1>Hangman</h1>
+    <pre>{dibujosAhorcado}</pre>
+      <div class="Modos de juego">
+        <a class="unJugador" href="/unJugador">Un Jugador</a>
+        <a class="dosJugadores" href="/dosJugadores">Dos Jugadores</a>
+      </div>
+  </div>
+  
+  <style>
     .Juego {
         background-color: black;
         color: white;
@@ -129,28 +25,53 @@
         padding: 0;
         font-family:cursive;
     }
+  
+    a.unJugador{
+  border: none;
+  color: white;
+  padding: 14px 36px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 0px -2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
 
-    pre {
-        font-size: 2em; 
-    }
+a.dosJugadores{
+  border: none;
+  color: white;
+  padding: 14px 36px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 0px -2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
 
-    p {
-        font-size: 1em;
-    }
+.unJugador {
+  background-color: rgb(31, 30, 30);
+  color: gainsboro;
+}
 
-    .palabra {
-        font-size: 3em;
-    }
+.unJugador:hover {
+  background-color: #dadada;
+  color: rgb(75, 74, 74);
+}
 
-    h1{
+.dosJugadores {
+  background-color: rgb(31, 30, 30);
+  color: gainsboro;
+}
+
+.dosJugadores:hover {
+  background-color: #dadada;
+  color: rgb(75, 74, 74);
+}
+
+pre {
         font-size: 2em;
     }
-    
-    button{
-        background-color: black;
-        border-color: white;
-        color: white;
-        border-radius: 10px;
-        margin-top: 10px;
-    }
-</style>
+  </style>
+

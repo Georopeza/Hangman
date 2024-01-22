@@ -33,25 +33,52 @@
             jugador1 = prompt("Jugador 1, por favor ingresa tu nombre:");
             jugador2 = prompt("Jugador 2, por favor ingresa tu nombre:");
         }   
-        let opcion = prompt(`${jugador1}, ¿quieres escribir la palabra o escoger una palabra aleatoria mediante la API? (escribir/escoger)`); //Funcion que pregunta como se va a jugar
-        if (opcion === 'escribir') {        //Jugador escribe la palabra a adivinar
-            palabra = prompt(`${jugador1}, por favor ingresa la palabra para el juego:`);
-            let confirmacion = confirm(`¿La palabra elegida es '${palabra}'?`);
-            while (!confirmacion) {
-              palabra = prompt(`${jugador1}, por favor ingresa la palabra para el juego:`);
-              confirmacion = confirm(`¿La palabra elegida es '${palabra}'?`);
-            }
-        } else if (opcion === 'escoger') {  //Jugador escoge la palabra a adivinar proveniente de la API
-            palabra = await obtenerPalabra();
-            let confirmacion = confirm(`¿La palabra elegida es '${palabra}'?`);
-            while (!confirmacion) {
-              palabra = await obtenerPalabra();
-              confirmacion = confirm(`¿La palabra elegida es '${palabra}'?`);
-            }
-        } else {
-            alert('Opción no válida. Por favor, ingresa "escribir" o "escoger".');
-            iniciarJuego();
-        }
+          let opcion = prompt(`${jugador1}, ¿Quieres escribir la palabra o escoger una palabra aleatoria mediante la API? (escribir/escoger)`); //Funcion que pregunta como se va a jugar
+            if (opcion === 'escribir') {        //Jugador escribe la palabra a adivinar
+                palabra = prompt(`${jugador1}, por favor ingresa la palabra para el juego:`);
+                  if (!/^[a-zA-Z]+$/.test(palabra)) { // Verifica si la cadena contiene solo letras
+                      alert('La palabra solo debe contener letras. Por favor, inténtalo de nuevo.');
+                      iniciarJuego();
+                      return;
+                  }
+                  if (palabra.trim().length === 0) { // Verifica si la cadena está vacía o contiene solo espacios en blanco
+                      alert('La palabra no debe estar vacía ni contener espacios en blanco. Por favor, inténtalo de nuevo.');
+                      iniciarJuego();
+                      return;
+                  }
+                  if (palabra.includes(' ')) { // Verifica si la cadena contiene algún espacio en blanco
+                      alert('La palabra no debe contener espacios en blanco. Por favor, inténtalo de nuevo.');
+                      iniciarJuego();
+                      return;
+                  }
+                let confirmacion = confirm(`¿La palabra elegida es '${palabra}'?`);
+                    while (!confirmacion) {
+                          palabra = prompt(`${jugador1}, por favor ingresa la palabra para el juego:`);
+                              if (!/^[a-zA-Z]+$/.test(palabra)) { // Verifica si la cadena contiene solo letras
+                                  alert('La palabra solo debe contener letras. Por favor, inténtalo de nuevo.');
+                                  continue;
+                              }
+                              if (palabra.trim().length === 0) { // Verifica si la cadena está vacía o contiene solo espacios en blanco
+                                  alert('La palabra no debe estar vacía ni contener espacios en blanco. Por favor, inténtalo de nuevo.');
+                                  continue;
+                              }
+                              if (palabra.includes(' ')) { // Verifica si la cadena contiene algún espacio en blanco
+                                  alert('La palabra no debe contener espacios en blanco. Por favor, inténtalo de nuevo.');
+                                  continue;
+                              }
+                          confirmacion = confirm(`¿La palabra elegida es '${palabra}'?`);
+                    }
+            } else if (opcion === 'escoger') {  //Jugador escoge la palabra a adivinar proveniente de la API
+                        palabra = await obtenerPalabra();
+                        let confirmacion = confirm(`¿La palabra elegida es '${palabra}'?`);
+                            while (!confirmacion) {
+                                palabra = await obtenerPalabra();
+                                confirmacion = confirm(`¿La palabra elegida es '${palabra}'?`);
+                            }
+                      } else {
+                        alert('Opción no válida. Por favor, ingresa "escribir" o "escoger".');
+                        iniciarJuego();
+                      }
         palabraAdivinada = Array(palabra.length).fill('_'); //Se hacen los espacios en blanco en funcion de la longitud de la palabra a adivinar
         intentos = 6;
         juegoTerminado = false;
@@ -103,19 +130,18 @@
       }
   
       if (intentos === 0) {     //Se verifica el estado de la partida, si ganó o perdió y quien lo hizo
-        juegoTerminado = true;
-        mensaje = `Has perdido. La palabra era '${palabra}'.`; 
-        palabraAdivinada = palabra.split('');
+          juegoTerminado = true;
+          mensaje = `Has perdido. La palabra era '${palabra}'.${jugador1} ha ganado.`; 
+          palabraAdivinada = palabra.split('');
       } else if (!palabraAdivinada.includes('_')) {
-        juegoTerminado = true;
-        if (jugador2 !== '') {
-          mensaje = `¡${jugador2} ha ganado!`;
-        } else {
-          mensaje = '¡Has ganado!';
-        }
-      }
-  
-      letra = ''; //Se limpia la variable letra para que pueda seguir adivinando
+                juegoTerminado = true;
+                    if (jugador2 !== '') {
+                        mensaje = `¡${jugador2} ha ganado!`;
+                    } else {
+                      mensaje = '¡Has ganado!';
+                    }
+              }
+          letra = ''; //Se limpia la variable letra para que pueda seguir adivinando
     }
   
     function manejarTecla(event) { //Para poder ingresar la letra con la tecla enter
@@ -124,20 +150,20 @@
       }
     }           //De aqui en adelante es la estructura de la pagina en html y css, y se va dibujando el hangman, no comento mas abajo porque no se como :)
   </script>
-  <div class="Juego">   
-  <h1>Hangman</h1>
-  <pre>{dibujosAhorcado[6 - intentos]}</pre>
-  <div class="palabra">{palabraAdivinada.join(' ')}</div>
-  <p>Te quedan {intentos} intentos.</p>
-  <p>Letras ingresadas: {letrasIngresadas.join(', ')}</p>
+    <div class="Juego">   
+    <h1>Hangman</h1>
+    <pre>{dibujosAhorcado[6 - intentos]}</pre>
+    <div class="palabra">{palabraAdivinada.join(' ')}</div>
+    <p>Te quedan {intentos} intentos.</p>
+    <p>Letras ingresadas: {letrasIngresadas.join(', ')}</p>
   
-  {#if juegoTerminado}
-  <p>{mensaje}</p>
-  <button on:click={iniciarJuego}>Jugar de nuevo</button> 
-  {:else}
-  <input type="text" bind:value={letra} placeholder="Introduce una letra" on:keyup={manejarTecla}>
-  <button on:click={adivinarLetra}>Adivinar</button>
-  {/if}
+    {#if juegoTerminado}
+      <p>{mensaje}</p>
+      <button on:click={iniciarJuego}>Jugar de nuevo</button> 
+    {:else}
+      <input type="text" bind:value={letra} placeholder="Introduce una letra" on:keyup={manejarTecla}>
+      <button on:click={adivinarLetra}>Adivinar</button>
+    {/if}
   </div>
   
   <style>

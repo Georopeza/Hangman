@@ -30,11 +30,11 @@
   async function iniciarJuego() { //Funcion que inicia el juego
       let palabraElegida = await obtenerPalabra();//Se obtiene la palabra mediante la API
       palabra = palabraElegida;
-    palabraAdivinada = Array(palabra.length).fill('_');
-    intentos = 6;
-    juegoTerminado = false;
-    mensaje = '';
-    letrasIngresadas = [];
+      palabraAdivinada = Array(palabra.length).fill('_');
+      intentos = 6;
+      juegoTerminado = false;
+      mensaje = '';
+      letrasIngresadas = [];
   }
 
   onMount(iniciarJuego);
@@ -84,11 +84,10 @@
       mensaje = `Has perdido. La palabra era '${palabra}'.`; 
       palabraAdivinada = palabra.split('');
     } else if (!palabraAdivinada.includes('_')) {
-      juegoTerminado = true;
-      mensaje = '¡Has ganado!';
-    }
-
-    letra = ''; //Se limpia la variable letra para que pueda seguir adivinando
+                juegoTerminado = true;
+                mensaje = '¡Has ganado!';
+              }
+      letra = ''; //Se limpia la variable letra para que pueda seguir adivinando
   }
 
   function manejarTecla(event) { //Para poder ingresar la letra con la tecla enter
